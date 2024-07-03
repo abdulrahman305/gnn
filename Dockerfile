@@ -18,7 +18,7 @@
 # You can then start an interactive python interpreter shell and 
 # import tensorflow-gnn with:
 # docker run -it tfgnn:latest
-FROM python:3.9-slim
+FROM python:3.13.0b2-slim
 # tzdata asks questions.
 ENV DEBIAN_FRONTEND="noninteractive"
 ENV TZ="America/New_York"

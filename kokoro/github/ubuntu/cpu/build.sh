@@ -36,6 +36,12 @@ mkdir -p "$TEST_ROOT"
 ln -s "$(pwd)"/tensorflow_gnn "$TEST_ROOT"/tensorflow_gnn
 tag_filters="-no_oss,-oss_excluded"
 
+# Check that `bazel` does version selection as expected.
+if [[ -n "${USE_BAZEL_VERSION}" && $(bazel --version) != *${USE_BAZEL_VERSION}* ]]; then
+  echo "Mismatch of configured and actual bazel version (see logged [[ command)"
+  exit 1
+fi
+
 bazel clean
 pip install -r requirements-dev.txt --progress-bar off
 pip install tf-keras-nightly tf-nightly --progress-bar off --upgrade
@@ -45,6 +51,10 @@ perl  -i -lpe '$k+= s/tensorflow>=2\.[0-9]+\.[0-9]+(,<=?[0-9.]+)?;/tf-nightly;/g
 python3 setup.py bdist_wheel
 pip uninstall -y tensorflow_gnn
 pip install dist/tensorflow_gnn-*.whl
+
+echo "Final packages after all pip commands:"
+pip list
+
 # Check that tf-nightly is installed but tensorflow is not
 # Also check that tf-keras-nightly is installed.
 pip freeze | grep -q tf-nightly= && ! pip freeze | grep -q tensorflow=

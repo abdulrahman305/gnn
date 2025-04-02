@@ -47,6 +47,12 @@ cat /etc/os-release
 # These tag filters are enforced to start with a comma for separation
 tag_filters="-no_oss,-oss_excluded${TAG_FILTERS}"
 
+# Check that `bazel` does version selection as expected.
+if [[ -n "${USE_BAZEL_VERSION}" && $(bazel --version) != *${USE_BAZEL_VERSION}* ]]; then
+  echo "Mismatch of configured and actual bazel version (see logged [[ command)"
+  exit 1
+fi
+
 bazel clean
 pip install -r requirements-dev.txt --progress-bar off
 pip install tensorflow=="${TF_VERSION}" --progress-bar off --upgrade
@@ -56,5 +62,8 @@ fi
 python3 setup.py bdist_wheel
 pip uninstall -y tensorflow_gnn
 pip install dist/tensorflow_gnn-*.whl
+
+echo "Final packages after all pip commands:"
+pip list
 
 bazel test --test_env=TF_USE_LEGACY_KERAS --build_tag_filters="${tag_filters}" --test_tag_filters="${tag_filters}" --test_output=errors --verbose_failures=true --build_tests_only --define=no_tfgnn_py_deps=true --keep_going --experimental_repo_remote_exec //bazel_pip/tensorflow_gnn/...

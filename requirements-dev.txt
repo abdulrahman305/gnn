@@ -1,7 +1,7 @@
 mock
 wheel
 torch_geometric
-torch < 2
+torch<2.9.0
 # includes glibcxx older than 3.4.29
 ai-edge-litert-nightly
 urllib3>=2.5.0 # not directly required, pinned by Snyk to avoid a vulnerability
